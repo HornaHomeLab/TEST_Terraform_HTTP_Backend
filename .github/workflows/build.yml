@@ -28,6 +28,12 @@ jobs:
 
       - name: Get Docker Image name
         id: docker-image
-        shell: pwsh
-        run: |
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "name=$('${{github.repository}}'.Replace('${{github.repository_owner}}/','').ToLower())"
+        uses:  StanislawHornaGitHub/Docker/get-repo-name@main
+
+  Build:
+    uses: StanislawHornaGitHub/Docker/.github/workflows/build-docker-image.yml@main
+    needs: Release
+    with:
+      image-name: ${{ needs.Release.outputs.docker-image-name }}
+      image-version: ${{ needs.Release.outputs.version }}
+    secrets: inherit
