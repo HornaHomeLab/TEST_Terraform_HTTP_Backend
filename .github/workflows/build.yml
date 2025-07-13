@@ -1,0 +1,33 @@
+name: Build container
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  Release:
+    runs-on: ubuntu-latest
+    outputs:
+      docker-image-name: ${{ steps.docker-image.outputs.name }}
+      version: ${{ steps.release.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        id: release
+        uses: StanislawHornaGitHub/GitHub_Release/create-release@main
+        with:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get Docker Image name
+        id: docker-image
+        shell: pwsh
+        run: |
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "name=$('${{github.repository}}'.Replace('${{github.repository_owner}}/','').ToLower())"
