@@ -1,6 +1,6 @@
 # Build stage
 FROM golang:1.24 AS builder
-ARG APP_VERSION='0.0.0'
+
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
@@ -11,6 +11,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
 # Minimal runtime stage
 FROM alpine:latest
+ARG APP_VERSION='0.0.0'
 
 ENV LOKI_APP_VERSION=${APP_VERSION}
 ENV LOKI_ENV=prod
